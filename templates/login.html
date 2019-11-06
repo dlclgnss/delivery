@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}배달의민족 sinup{% endblock %}
+
+
+{% block body %}
+
+<div class="container">
+  <form class="form-signin" role="form" method="post" action="">
+    {% csrf_token %}
+    <h2 class="form-signin-heading a">로그인</h2>
+    <input type="texyt" class="form-control br"
+      placeholder="Username" name='username' required="" autofocus="">
+    <input type="password" class="form-control br"
+      placeholder="Password" name='password' required="">
+      <div class='fontcolor br a'>{{ error }}</div> <!--error의 키값이 출력-->
+    <button class="btn btn-lg btn-primary btn-block br" type="submit">
+      Login
+    </button>
+
+    {% if is_client %}
+    <div class="a">
+         <a href="{% url 'login' %}">업체용 로그인</a>
+    </div>
+    {% endif %}
+
+    <div class='a'>회원가입 후, 로그인이 가능합니다.</div>
+  </form>
+
+</div>
+
+{% endblock %}
