@@ -12,7 +12,7 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             {% if user.is_authenticated %}
-            <li class="active"><a href="{% url 'index'%}">홈</a></li>
+            <li><a href="{% url 'index'%}">홈</a></li>
             <li><a href="{% url 'menu' %}">메뉴</a></li>
             <li><a href="order">주문</a></li>
             <li>
@@ -23,9 +23,11 @@
             {% else %}
             <li><a href="{% url 'client:login' %}">로그인</a></li>
             <li><a href="{% url 'client:signup' %}">회원가입</a></li>
-            <li><a href="{% url 'index' %}">기업페이지</a></li>
             {% endif %}
           </ul>
+          {% if user.is_authenticated %}
+          <li class="btnfloat username">안녕하세요, <strong>{{ user.username}}</strong>님 어서오세요.</li>
+          {% endif%}
         </div><!--/.nav-collapse -->
       </div>
     </div>

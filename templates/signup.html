@@ -7,7 +7,9 @@
 <div class="container">
   <form class="form-signin" role="form" method="post" action="">
     {% csrf_token %}
-    <h2 class="form-signin-heading a">회원가입</h2>
+    <h2 class="form-signin-heading a">
+      {% if replace %}{{replace}}{% else %}업체회원가입{% endif %}
+    </h2>
     <input type="texyt" class="form-control br"
       placeholder="Username" name='username' required="" autofocus="">
       <div class='a'>{{ error }}</div>
@@ -23,6 +25,9 @@
          <a href="{% url 'signup' %}">업체용 회원가입하기</a>
     </div>
     {% endif %}
+    <div class="a">
+         <a href="{% url 'client:main' %}">홈으로 돌아가기</a>
+    </div>
   </form>
 </div>
 

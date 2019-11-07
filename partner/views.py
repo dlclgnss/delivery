@@ -10,7 +10,7 @@ from .models import Partner,Menu
 
 URL_LOGIN = '/partner/login/'
 def partner_group_check(user):
-    return 'partner' in user.groups.all()
+    return 'partner' in [ group.name for group in user.groups.all()]
 
 
 #기본페이지 (로그인한 업체정보를 보여준다.) 8000:/partner 부분
@@ -34,6 +34,7 @@ def index(request):
 
 #업체정보 수정 (정보를 가져오는 인스턴스 값을 추가하면된다.)
 @login_required(login_url= URL_LOGIN )
+@user_passes_test(partner_group_check, login_url= URL_LOGIN )
 def edit_info(request):
     if request.method == 'POST':
         partner_form = PartnerForm(request.POST,instance=request.user.partner)
@@ -73,9 +74,9 @@ def signup(request):
 
 #메뉴페이지 ,카테고리
 @login_required(login_url= URL_LOGIN )
+@user_passes_test(partner_group_check, login_url= URL_LOGIN )
 def menu(request):
     category = request.GET.get("category")
-
     # menu_list = Menu.objects.filter(partner = request.user.partner)
     if not category:
         menu_list = Menu.objects.filter(partner = request.user.partner)
@@ -99,6 +100,7 @@ def menu(request):
 
 #메뉴 추가페이지
 @login_required(login_url= URL_LOGIN )
+@user_passes_test(partner_group_check, login_url= URL_LOGIN )
 def menu_add(request):
     if request.method == 'POST':
         menu_form = MenuForm(request.POST,request.FILES)
@@ -119,6 +121,7 @@ def menu_add(request):
 
 #메뉴 상세페이지
 @login_required(login_url= URL_LOGIN )
+@user_passes_test(partner_group_check, login_url= URL_LOGIN )
 def menu_detail(request, menu_id):
     menu=Menu.objects.get(id = menu_id)
     ctx={'menu': menu}
@@ -127,6 +130,7 @@ def menu_detail(request, menu_id):
 
 #메뉴 상세페이지에서 수정하기
 @login_required(login_url= URL_LOGIN )
+@user_passes_test(partner_group_check, login_url= URL_LOGIN )
 def menu_edit(request, menu_id):
     # menu=Menu.objects.get(id = menu_id)
     menu=get_object_or_404(Menu,id = menu_id)
@@ -150,8 +154,15 @@ def menu_edit(request, menu_id):
 
 #메뉴목록하나 삭제하기
 @login_required(login_url= URL_LOGIN )
+@user_passes_test(partner_group_check, login_url= URL_LOGIN )
 def menu_delete(request, menu_id):
     menu=get_object_or_404(Menu,id = menu_id)
     menu.delete()
 
     return redirect('menu')
+
+
+# 고객이 주문한것 확인하는 페이지
+def order(request):
+    ctx={}
+    return render(request,'ordermenu_for_partner.html',ctx)

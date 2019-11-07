@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}메뉴페이지{% endblock %}
+{% block body %}
+{% include 'navbar.html'%}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-2">
+        <h3 class="br">주문 리스트</h3>
+        <table class="table">
+          <tr>
+            <th>고객</th>
+            <th>메뉴</th>
+          </tr>
+            {% for order in order_list %}
+            <tr> <!--url를 꼭 붙여줘야 된다.-->
+              <td></td>
+              <td></td>
+            </tr>
+            {% endfor %}
+          </table>
+    </div>
+
+
+
+
+
+  </div>
+</div>
+
+
+{% endblock %}

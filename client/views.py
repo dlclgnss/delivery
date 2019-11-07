@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate,login,logout
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.models import User,Group
-from partner.models import Partner #다른쪽 모델을 가져올때
+from partner.models import Partner,Menu #다른쪽 모델을 가져올때
+from .models import Client,Order,OrderItem
 
 
 # Create your views here.
@@ -43,7 +44,8 @@ def common_login(request,ctx,group):
 # client 로그인 하는 페이지
 def signin(request):
     ctx={
-    "is_client":True
+    "is_client":True,
+    'replace':'회원 로그인',
     }
     return common_login(request,ctx,"client")
 
@@ -58,7 +60,11 @@ def common_signup(request,ctx,group):
         user = User.objects.create_user(username,email,password)
         target_group = Group.objects.get(name=group)# 그룹(클라이언트/파트너)의 이름을 가져온다.
         user.groups.add(target_group) # 만든 user에 그룹을 정해준다.
-        return redirect('index')
+
+        if group == "client":
+            Client.objects.create(user=user, name=username)
+
+        return redirect('client:main')
 
     return render(request,'signup.html',ctx)
 
@@ -66,5 +72,40 @@ def common_signup(request,ctx,group):
 
 # client 회원가입 하는 페이지
 def signup(request):
-    ctx = { "is_client":True }
+    ctx = {
+    "is_client":True,
+    'replace': '일반회원가입'
+     }
     return common_signup(request,ctx,"client")
+
+
+
+# 메뉴에서 주문하기
+def order(request,partner_id):
+    partner = Partner.objects.get(id=partner_id)
+    menu_list = Menu.objects.filter(partner=partner)
+
+    if request.method == "POST":
+        order = Order.objects.create(
+            client = request.user.client,
+            address = "text",
+        )
+
+        for menu in menu_list:
+            menu_count =request.POST.get(str(menu.id))
+            menu_count = int(menu_count)
+            if menu_count > 0:
+                item = OrderItem.objects.create(
+                    order=order,
+                    menu=menu,
+                    count = menu_count,
+                )
+                # order.items.add(item)
+
+        return redirect('client:main')
+
+    ctx={
+    'menu_list':menu_list,
+    'partner':partner
+    }
+    return render(request,'ordermenu.html',ctx)
